@@ -7,3 +7,59 @@
   각도 조절하는 부분 화살표 : #D55454
   파워 게이지 : #E67567
 */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  color: #2d2d2d;
+}
+
+/* Canvas */
+
+#canvas-area {
+  position: relative;
+  width: fit-content;
+  height: fit-content;
+}
+
+/* Score & Timer Area */
+
+.area {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background-color: #fff;
+  text-align: center;
+}
+
+.timer {
+  position: absolute;
+  top: 40px;
+  right: 40px;
+}
+
+.score {
+  position: absolute;
+  top: 40px;
+  left: 40px;
+}
+
+.large {
+  width: fit-content;
+  height: 75px;
+  font-size: 55px;
+  font-weight: 900;
+  line-height: 1.7;
+  margin: 0 auto;
+}
+
+.bold {
+  width: fit-content;
+  font-size: 18px;
+  font-weight: 700;
+}
