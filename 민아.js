@@ -73,18 +73,56 @@ document.querySelector(".score").appendChild(scoreText);
 
 var gContext = document.getElementById("game").getContext("2d");
 
-gContext.beginPath();
-gContext.moveTo(248, 610);
-gContext.lineTo(340, 610);
-gContext.strokeStyle = "#707070";
-gContext.lineWidth = 5;
-gContext.stroke();
-gContext.closePath();
+var arrow = new Image();
+arrow.src = "./images/arrow.png";
+arrow.onload = function() {
+  gContext.drawImage(arrow, -1, -1);
+}
 
-gContext.beginPath();
-gContext.moveTo(250, 520);
-gContext.lineTo(250, 612);
-gContext.strokeStyle = "#707070";
-gContext.lineWidth = 5;
-gContext.stroke();
-gContext.closePath();
+// 90도 틀 그리기
+function arrowFrame() {
+  gContext.beginPath();
+  gContext.moveTo(248, 610);
+  gContext.lineTo(340, 610);
+  gContext.strokeStyle = "#707070";
+  gContext.lineWidth = 5;
+  gContext.stroke();
+  gContext.closePath();
+
+  gContext.beginPath();
+  gContext.moveTo(250, 520);
+  gContext.lineTo(250, 612);
+  gContext.strokeStyle = "#707070";
+  gContext.lineWidth = 5;
+  gContext.stroke();
+  gContext.closePath();
+}
+
+var degree = 0;
+var direction = -1;
+var rotateX = -1;
+var rotateY = -1;
+
+function moveArrow() {
+  
+  // 방향 설정
+  if (degree == 0) direction = -1;
+  else if (degree == -90) direction = 1;
+
+  // 화살표 위치 조정
+  rotateX = -(-degree / 10) - 1.5;
+  rotateY = -(-degree / 30) * 2 - 1;
+
+  // 화살표 그리기
+  gContext.clearRect(0, 0, canvas.width, canvas.height);
+  arrowFrame();
+  gContext.save();
+  gContext.translate(248, 600);
+  gContext.rotate(degree * Math.PI / 180);
+  gContext.drawImage(arrow, rotateX, rotateY);
+  gContext.restore();
+
+  degree += direction;
+}
+
+setInterval(moveArrow, 15);
