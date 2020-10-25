@@ -1,6 +1,6 @@
 // 캔버스 가져오기
-var canvas = document.getElementById("game");
-var context = canvas.getContext("2d");
+var canvas = document.getElementById("background");
+var bgContext = canvas.getContext("2d");
 
 // 배경, 공 이미지 표시
 
@@ -12,9 +12,9 @@ var ball = new Image();
 ball.src = "./images/basketball.png";
 
 window.onload = function() {
-  context.drawImage(bgImage, 0, 0);
-  context.drawImage(hoopImage, 1060, 400);
-  context.drawImage(ball, 100, 630, 120, 120);
+  bgContext.drawImage(bgImage, 0, 0);
+  bgContext.drawImage(hoopImage, 1060, 400);
+  bgContext.drawImage(ball, 100, 630, 120, 120);
 }
 
 // 타이머
@@ -68,3 +68,23 @@ var scoreText = document.createElement("span");
 scoreText.setAttribute("class", "bold");
 scoreText.innerText = "SCORE";
 document.querySelector(".score").appendChild(scoreText);
+
+// 각도 조절하는 부분 그리기
+
+var gContext = document.getElementById("game").getContext("2d");
+
+gContext.beginPath();
+gContext.moveTo(248, 610);
+gContext.lineTo(340, 610);
+gContext.strokeStyle = "#707070";
+gContext.lineWidth = 5;
+gContext.stroke();
+gContext.closePath();
+
+gContext.beginPath();
+gContext.moveTo(250, 520);
+gContext.lineTo(250, 612);
+gContext.strokeStyle = "#707070";
+gContext.lineWidth = 5;
+gContext.stroke();
+gContext.closePath();

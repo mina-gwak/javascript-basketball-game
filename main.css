@@ -27,6 +27,16 @@ body {
   height: fit-content;
 }
 
+#background {
+  position: absolute;
+  z-index: -2;
+}
+
+#game {
+  position: absolute;
+  z-index: -1;
+}
+
 /* Score & Timer Area */
 
 .area {
@@ -39,14 +49,14 @@ body {
 
 .timer {
   position: absolute;
-  top: 40px;
-  right: 40px;
+  top: 30px;
+  left: 1110px;
 }
 
 .score {
   position: absolute;
-  top: 40px;
-  left: 40px;
+  top: 30px;
+  left: 50px;
 }
 
 .large {
