@@ -18,7 +18,6 @@ ball.src = "./images/basketball.png";
 function drawBackground(){
     bgCtx.drawImage(bgImage, 0, 0);
     bgCtx.drawImage(hoopImage, 1060, 400);
-    bgCtx.drawImage(ball, 100, 630, 120, 120);
 }
 
 const width = gCanvas.width;
@@ -33,18 +32,18 @@ let isCharging = false;
 let isFired = false;
 let isHitted = false;
 const GRAVITY_ACCELERATION = 0.098;
-let degree = 45;
+let degree=0;
 
 // 공 그리기
 
 function drawBall(){
-    gCtx.beginPath();
-    gCtx.arc(ballX, ballY, 60, 0, Math.PI * 2);
-    gCtx.stroke();
+    gCtx.drawImage(ball, ballX, ballY, 120, 120);
 }
 
 function draw(){
     gCtx.clearRect(0,0,width,height);
+    arrowFrame();
+    moveArrow();
     drawGauging();
     drawGaugeBar();
     drawBall();
@@ -83,10 +82,59 @@ function drawGauging(){
     }
 };
 
+// 각도기 조절
+
+var arrow = new Image();
+arrow.src = "./images/arrow.png";
+
+// 90도 틀 그리기
+function arrowFrame() {
+  gCtx.beginPath();
+  gCtx.moveTo(248, 610);
+  gCtx.lineTo(340, 610);
+  gCtx.strokeStyle = "#707070";
+  gCtx.lineWidth = 5;
+  gCtx.stroke();
+  gCtx.closePath();
+
+  gCtx.beginPath();
+  gCtx.moveTo(250, 520);
+  gCtx.lineTo(250, 612);
+  gCtx.strokeStyle = "#707070";
+  gCtx.lineWidth = 5;
+  gCtx.stroke();
+  gCtx.closePath();
+}
+
+var direction = -1;
+var rotateX = -1;
+var rotateY = -1;
+
+function moveArrow() {
+  
+    // 방향 설정
+    if (degree == 0) direction = -1;
+    else if (degree == -90) direction = 1;
+
+    // 화살표 위치 조정
+    rotateX = -(-degree / 10) - 1.5;
+    rotateY = -(-degree / 30) * 2 - 1;
+
+    // 화살표 그리기
+    gCtx.save();
+    gCtx.translate(248, 600);
+    gCtx.rotate(degree * Math.PI / 180);
+    gCtx.drawImage(arrow, rotateX, rotateY);
+    gCtx.restore();
+
+    degree += direction;
+}
+
 // 스페이스바 입력
 
 const keydownHandler = event => {
     if (event.keyCode === 32) {
+        event.preventDefault();
         isCharging = true;
         isFired = false;
         draw();
@@ -97,7 +145,7 @@ const keyupHandler = event => {
     if(event.keyCode === 32 && !isFired){
         isCharging = false;
         isFired = true;
-        ballPower = gauge / 1.98;
+        ballPower = gauge / 2.43;
         let degreeR = degree * Math.PI / 180;
         ballVx = ballPower * Math.cos(degreeR);
         ballVy = -ballPower * Math.sin(degreeR);
