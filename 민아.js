@@ -38,7 +38,7 @@ document.querySelector(".timer").appendChild(timerText);
 
 var time = 30;
 document.querySelector(".timer > p").innerText = time;
-var timer = setInterval(gameTimer, 1000);
+// var timer = setInterval(gameTimer, 1000);
 
 function gameTimer() {
   if (time != 0) {
@@ -50,7 +50,7 @@ function gameTimer() {
   }
 }
 
-gameTimer();
+// gameTimer();
 
 // 스코어 영역 만들기
 // 점수 카운트하는 부분이 구현되지 않아 임의로 값 넣어둠
@@ -76,7 +76,7 @@ var gContext = document.getElementById("game").getContext("2d");
 var arrow = new Image();
 arrow.src = "./images/arrow.png";
 arrow.onload = function() {
-  gContext.drawImage(arrow, -1, -1);
+  gContext.drawImage(arrow, 248, 600);
 }
 
 // 90도 틀 그리기
@@ -97,6 +97,8 @@ function arrowFrame() {
   gContext.stroke();
   gContext.closePath();
 }
+
+arrowFrame();
 
 var degree = 0;
 var direction = -1;
@@ -125,4 +127,30 @@ function moveArrow() {
   degree += direction;
 }
 
-setInterval(moveArrow, 15);
+// setInterval(moveArrow, 15);
+
+// 시작 화면
+
+var startDiv = document.createElement("div");
+startDiv.setAttribute("class", "start-div");
+
+var startText = document.createElement("p");
+startText.setAttribute("class", "start-text");
+startText.innerHTML = "PRESS ENTER<br />TO START";
+startDiv.appendChild(startText);
+
+document.getElementById("canvas-area").appendChild(startDiv);
+
+// 엔터 누르면 시작
+
+function startGame(event) {
+  if (event.keyCode == 13) {
+    document.querySelector(".start-div").style.display = "none";
+    setInterval(moveArrow, 15);
+    var timer = setInterval(gameTimer, 1000);
+    gameTimer();
+  }
+}
+
+document.addEventListener("keydown", startGame);
+
