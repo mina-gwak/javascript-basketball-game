@@ -8,31 +8,32 @@ var gCtx = gCanvas.getContext("2d");
 
 // 배경, 공 이미지 표시
 
-// var bgImage = new Image();
-// bgImage.src = "./images/background.png";
-// var hoopImage = new Image();
-// hoopImage.src = "./images/hoop.png";
-// var ball = new Image();
-// ball.src = "./images/basketball.png";
+var bgImage = new Image();
+bgImage.src = "./images/background.png";
+var hoopImage = new Image();
+hoopImage.src = "./images/hoop.png";
+var ball = new Image();
+ball.src = "./images/basketball.png";
 
-// function drawBackground(){
-//     bgCtx.drawImage(bgImage, 0, 0);
-//     bgCtx.drawImage(hoopImage, 1060, 400);
-//     bgCtx.drawImage(ball, 100, 630, 120, 120);
-// }
+function drawBackground(){
+    bgCtx.drawImage(bgImage, 0, 0);
+    bgCtx.drawImage(hoopImage, 1060, 400);
+    bgCtx.drawImage(ball, 100, 630, 120, 120);
+}
 
-const width = bgCanvas.width;
-const height = bgCanvas.height;
+const width = gCanvas.width;
+const height = gCanvas.height;
 let ballX = 100;
 let ballY = 630;
-let ballPower=0;
+let ballPower;
 let ballVx;
 let ballVy;
+let gauge = 0;
 let isCharging = false;
 let isFired = false;
 let isHitted = false;
 const GRAVITY_ACCELERATION = 0.098;
-let degree = 30;
+let degree = 45;
 
 // 공 그리기
 
@@ -44,22 +45,20 @@ function drawBall(){
 
 function draw(){
     gCtx.clearRect(0,0,width,height);
-    if(isFired){
-        ballVx = ballPower * Math.cos(degree);
-        ballVy = -ballPower * Math.sin(degree);
-    }
     drawGauging();
     drawGaugeBar();
     drawBall();
-    // drawBackground();
-}
+    drawBackground();
 
-function calculate(){
-    ballVy += GRAVITY_ACCELERATION;
-    ballX += ballVx;
-    ballY += ballVy;
-
-    draw();
+    if(!isFired){
+        ballX = 100;
+        ballY = 630;
+    }
+    else{
+        ballVy += 1.98;
+        ballX = ballX + ballVx;
+        ballY = ballY + ballVy;
+    }
 }
 
 function drawGaugeBar(){
@@ -70,12 +69,12 @@ function drawGaugeBar(){
 }
 
 function drawGauging(){
-    if(ballPower<=200 && isCharging){
+    if(gauge<=200 && isCharging && !isFired){
         gCtx.fillStyle = "#E67567";
-        ballPower += 1;
-        gCtx.fillRect(635,100,ballPower,30);
+        gauge += 1;
+        gCtx.fillRect(635,100,gauge,30);
     }
-    else if(!isCharging){
+    else if(!isCharging && isFired){
         gCtx.fillStyle = "black";
         gCtx.fillRect(635,100,0,30);
     }
@@ -83,8 +82,6 @@ function drawGauging(){
         gCtx.fillRect(635,100,200,30);
     }
 };
-
-// draw();
 
 // 스페이스바 입력
 
@@ -97,10 +94,14 @@ const keydownHandler = event => {
 };
 
 const keyupHandler = event => {
-    if (event.keyCode === 32) {
+    if(event.keyCode === 32 && !isFired){
         isCharging = false;
         isFired = true;
-        ballPower = 0;
+        ballPower = gauge / 1.98;
+        let degreeR = degree * Math.PI / 180;
+        ballVx = ballPower * Math.cos(degreeR);
+        ballVy = -ballPower * Math.sin(degreeR);
+        gauge = 0;
     }
 };
 
