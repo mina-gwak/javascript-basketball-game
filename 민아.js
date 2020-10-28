@@ -15,6 +15,10 @@ window.onload = function() {
   bgContext.drawImage(bgImage, 0, 0);
   bgContext.drawImage(hoopImage, 1060, 400);
   bgContext.drawImage(ball, 100, 630, 120, 120);
+  scoreArr = [0, 0, 0];
+  showTime();
+  createRanking();
+  startScreen();
 }
 
 // 타이머
@@ -37,16 +41,25 @@ document.querySelector(".timer").appendChild(timerText);
 // 타이머
 
 var time = 30;
-document.querySelector(".timer > p").innerText = time;
-// var timer = setInterval(gameTimer, 1000);
+
+function showTime() {
+  document.querySelector(".timer > p").innerText = time;
+}
 
 function gameTimer() {
-  if (time != 0) {
-    document.querySelector(".timer > p").innerText = time;
+  var arrow = setInterval(moveArrow, 15);
+  var timer = setInterval(changeTime, 1000);
+  function changeTime() {
     time -= 1;
-  } else {
-    document.querySelector(".timer > p").innerText = time;
-    clearInterval(timer);
+    if (time != 0) {
+      document.querySelector(".timer > p").innerText = time;
+    } else {
+      document.querySelector(".timer > p").innerText = time;
+      clearInterval(timer);
+      clearInterval(arrow);
+      time = 1;
+      endScreen();
+    }
   }
 }
 
@@ -61,7 +74,7 @@ document.getElementById("canvas-area").appendChild(scoreArea);
 
 var score = document.createElement("p");
 score.setAttribute("class", "large");
-score.innerText = 10;
+score.innerText = 0;
 document.querySelector(".score").appendChild(score);
 
 var scoreText = document.createElement("span");
@@ -127,30 +140,126 @@ function moveArrow() {
   degree += direction;
 }
 
-// setInterval(moveArrow, 15);
-
 // 시작 화면
 
-var startDiv = document.createElement("div");
-startDiv.setAttribute("class", "start-div");
+function startScreen() {
+  var darkDiv = document.createElement("div");
+  darkDiv.setAttribute("class", "dark-div");
 
-var startText = document.createElement("p");
-startText.setAttribute("class", "start-text");
-startText.innerHTML = "PRESS ENTER<br />TO START";
-startDiv.appendChild(startText);
+  var largeBtn = document.createElement("p");
+  largeBtn.setAttribute("class", "div-btn");
+  largeBtn.innerHTML = "PRESS ENTER<br />TO START";
+  darkDiv.appendChild(largeBtn);
 
-document.getElementById("canvas-area").appendChild(startDiv);
+  document.getElementById("canvas-area").appendChild(darkDiv);
+}
 
-// 엔터 누르면 시작
+// 엔딩 화면
+
+var currentScore;
+
+function endScreen() {
+  var darkDiv = document.createElement("div");
+  darkDiv.setAttribute("class", "dark-div end");
+
+  var gameOver = document.createElement("h1");
+  gameOver.setAttribute("class", "end-heading");
+  gameOver.innerText = "GAME OVER";
+  darkDiv.appendChild(gameOver);
+
+  var scoreBox = document.createElement("div");
+  scoreBox.setAttribute("class", "score-box");
+  darkDiv.appendChild(scoreBox);
+
+  var scoreText = document.createElement("div");
+  scoreText.setAttribute("class", "score-text-box");
+  scoreBox.appendChild(scoreText);
+
+  var score = document.createElement("p");
+  score.setAttribute("class", "score-text");
+  score.innerText = "SCORE";
+  scoreText.appendChild(score);
+
+  var scoreNum = document.createElement("p");
+  scoreNum.setAttribute("class", "score-text");
+  // var currentScore = document.querySelector(".score p").innerText;
+  // 이미지랑 랭킹 업데이트 확인하려고 1로 지정해둠
+  currentScore = "1";
+  scoreNum.innerText = currentScore;
+  scoreText.appendChild(scoreNum);
+
+  var best = document.createElement("p");
+  best.setAttribute("class", "score-text");
+  best.innerText = "BEST";
+  scoreText.appendChild(best);
+
+  var bestNum = document.createElement("p");
+  bestNum.setAttribute("class", "score-text");
+  bestNum.innerText = (parseInt(currentScore) > parseInt(scoreArr[0]) ? currentScore : scoreArr[0]);
+  scoreText.appendChild(bestNum);
+
+  // 새로운 베스트 스코어가 나오면 new 이미지 띄우기
+
+  if (parseInt(scoreNum.innerText) > parseInt(scoreArr[0])) {
+    var newScore = document.createElement("img");
+    newScore.setAttribute("src", "./images/new.png");
+    newScore.setAttribute("class", "new-score");
+    scoreBox.appendChild(newScore);
+  }
+
+  var smallBtn = document.createElement("p");
+  smallBtn.setAttribute("class", "div-btn smBtn");
+  smallBtn.innerHTML = "PRESS ENTER TO RESTART";
+  darkDiv.appendChild(smallBtn);
+
+  document.getElementById("canvas-area").appendChild(darkDiv);
+
+  // 랭킹 업데이트 
+
+  for (var i = 0; i < scoreArr.length; i++) {
+    if (scoreArr.includes(parseInt(currentScore))) break;
+    if (parseInt(currentScore) > parseInt(scoreArr[i])) {
+      scoreArr.splice(i, 0, parseInt(currentScore));
+      scoreArr.pop();
+      break;
+    }
+  }
+}
+
+// 게임 시작 & 재시작
 
 function startGame(event) {
   if (event.keyCode == 13) {
-    document.querySelector(".start-div").style.display = "none";
-    setInterval(moveArrow, 15);
-    var timer = setInterval(gameTimer, 1000);
+    event.preventDefault();
+    var div = document.querySelector(".dark-div");
+    div.parentNode.removeChild(div);
+    var rank = document.querySelector(".ranking");
+    rank.parentNode.removeChild(rank);
+    showTime();
+    createRanking();
     gameTimer();
   }
 }
 
 document.addEventListener("keydown", startGame);
 
+// 랭킹 테이블
+
+var scoreArr; // onload에서 초기화했음
+
+function createRanking() {
+  var ranking = document.createElement("table");
+  var rankingHead = document.createElement("thead");
+  var rankingBody = document.createElement("tbody");
+  ranking.appendChild(rankingHead);
+  ranking.appendChild(rankingBody);
+  ranking.setAttribute("class", "ranking");
+  for (var i = 0; i < 4; i++) {
+    if (!i) {
+      rankingHead.innerHTML += "<tr><th>순위</th><th>점수</th></tr>";
+    } else {
+      rankingBody.innerHTML += "<tr><td>"+i+"등</td><td>"+scoreArr[i-1]+"점</td></tr>";
+    }
+  }
+  document.getElementById("canvas-area").appendChild(ranking);
+}
