@@ -57,7 +57,7 @@ function gameTimer() {
       document.querySelector(".timer > p").innerText = time;
       clearInterval(timer);
       clearInterval(arrow);
-      time = 1;
+      time = 30;
       endScreen();
     }
   }
