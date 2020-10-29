@@ -40,6 +40,7 @@ let isFired = false;
 let isHitted = false;
 const GRAVITY_ACCELERATION = 0.098;
 let degree=0;
+let stopArrow = false;
 
 // 각도기 조절
 
@@ -68,6 +69,14 @@ function arrowFrame() {
 var direction = -1;
 var rotateX = -1;
 var rotateY = -1;
+
+function drawArrow() {
+  gCtx.save();
+  gCtx.translate(248, 600);
+  gCtx.rotate(degree * Math.PI / 180);
+  gCtx.drawImage(arrow, rotateX, rotateY);
+  gCtx.restore();
+}
 
 function moveArrow() {
   
@@ -117,7 +126,9 @@ function showTime() {
 function gameTimer() {
 //   var arrow = setInterval(moveArrow, 10);
   var timer = setInterval(changeTime, 1000);
-  var start = setInterval(draw, 10);
+  var start = setInterval(function() {
+    draw(stopArrow);
+  }, 10);
   function changeTime() {
     time -= 1;
     if (time != 0) {
@@ -283,10 +294,11 @@ function drawBall(){
 
 }
 
-function draw(){
+function draw(stop){
     gCtx.clearRect(0,0,width,height);
     arrowFrame();
-    moveArrow();
+    if (stopArrow == false) moveArrow();
+    else drawArrow();
     drawGauging();
     drawGaugeBar();
     drawBall();
@@ -298,6 +310,7 @@ function draw(){
     }
     else if(isFired && (ballY > 640 || ballY < 60 || ballX < 60 )){          // 바닥 또는 천장에 닿으면 재시작
         isFired = false;
+        stopArrow = false;
     }
     else{               // 발사 후 X, Y좌표 계산
         if(ballY+ballVy < 0 || ballY + ballVy > height){                     // 천장에 닿았을 때 튕기는거  
@@ -334,8 +347,6 @@ function drawGauging(){
     }
 };
 
-
-
 // 스페이스바 입력
 
 const keydownHandler = event => {
@@ -343,7 +354,8 @@ const keydownHandler = event => {
         event.preventDefault();
         isCharging = true;
         isFired = false;
-        draw();
+        stopArrow = true;
+        draw(stopArrow);
     }
 };
 
