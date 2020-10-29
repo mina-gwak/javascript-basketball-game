@@ -34,7 +34,10 @@ let ballPower;
 let ballV;
 let ballVx;
 let ballVy;
+let ballRadius = 60;
+
 let gauge = 0;
+let Rgauge = false;     // 게이지 감소
 let isCharging = false;
 let isFired = false;
 let isHitted = false;
@@ -303,7 +306,7 @@ function draw(){
         if(ballY+ballVy < 0 || ballY + ballVy > height){                     // 천장에 닿았을 때 튕기는거  
             ballVy = - ballVy;
         }
-        else if(ballX+ballVx < 0 || ballX + ballVx > width || (ballX+ballVx && ballY+ballVy == 410)){                 // 벽에 닿았을 때 튕기는거
+        else if(ballX+ballVx < 0 || ballX + ballVx > width || (ballX+ballRadius >= 1000 && (ballY+ballRadius >= 400 && ballY+ballRadius <= 420))){                 // 벽에 닿았을 때 튕기는거
             ballVx = - ballVx;
         }
         ballVy += 0.98;
@@ -320,18 +323,22 @@ function drawGaugeBar(){
 }
 
 function drawGauging(){
-    if(gauge<=200 && isCharging && !isFired){
-        gCtx.fillStyle = "#E67567";
+    if(gauge<200 && isCharging && !isFired && Rgauge == false){
         gauge += 1;
-        gCtx.fillRect(600,100,gauge,30);
     }
-    else if(!isCharging && isFired){
-        gCtx.fillStyle = "black";
-        gCtx.fillRect(600,100,0,30);
+    else if(gauge == 200 && Rgauge == false){
+        Rgauge = true;
+        gauge -= 1;
     }
-    else if(isCharging){
-        gCtx.fillRect(600,100,200,30);
+    else if(gauge > 0 && isCharging && !isFired && Rgauge == true ){
+        gauge -= 1;
     }
+    else if(gauge == 0 && Rgauge == true){
+        Rgauge = false;
+        gauge += 1;
+    }
+
+    gCtx.fillRect(600,100,gauge,30);
 };
 
 
@@ -340,6 +347,7 @@ function drawGauging(){
 
 const keydownHandler = event => {
     if (event.keyCode === 32) {
+        gCtx.fillStyle = "#E67567";
         event.preventDefault();
         isCharging = true;
         isFired = false;
@@ -349,6 +357,7 @@ const keydownHandler = event => {
 
 const keyupHandler = event => {
     if(event.keyCode === 32 && !isFired){
+        gCtx.fillStyle = "black";
         isCharging = false;
         isFired = true;
         ballPower = gauge / 2;
@@ -358,6 +367,7 @@ const keyupHandler = event => {
         ballVy = -ballPower * Math.sin(degreeR);
 
         gauge = 0;
+        Rgauge = false;
     }
 };
 
