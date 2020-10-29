@@ -26,12 +26,9 @@ window.onload = function drawBackground(){
 
 const width = gCanvas.width;
 const height = gCanvas.height;
-const groundX = 100;
-const groundY = 630;
 let ballX = 100;
 let ballY = 630;
 let ballPower;
-let ballV;
 let ballVx;
 let ballVy;
 let gauge = 0;
@@ -278,7 +275,6 @@ function startScreen() {
 
 function drawBall(){
     gCtx.drawImage(ball, ballX, ballY, 120, 120);
-
 }
 
 function draw(){
@@ -295,41 +291,53 @@ function draw(){
         ballY = 630;
     }
     else{
-        if(ballY+ballVy < 0 || ballY + ballVy > height){
-            ballVy = - ballVy;
-        }
-        else if(ballX+ballVx < 0 || ballX + ballVx > width){
-            ballVx = - ballVx;
-        }
-        ballVy += 0.98;
-        ballX += ballVx;
-        ballY += ballVy;
+        ballVy += 1.98;
+        ballX = ballX + ballVx;
+        ballY = ballY + ballVy;
     }
 }
 
 function drawGaugeBar(){
-    gCtx.strokeRect(600,100,200,30);
+    gCtx.strokeRect(635,100,200,30);
     gCtx.lineWidth = 3;
     gCtx.font = "20px bold"
-    gCtx.fillText("파워 게이지", 650, 180);
+    gCtx.fillText("파워 게이지", 685, 180);
 }
 
 function drawGauging(){
     if(gauge<=200 && isCharging && !isFired){
         gCtx.fillStyle = "#E67567";
         gauge += 1;
-        gCtx.fillRect(600,100,gauge,30);
+        gCtx.fillRect(635,100,gauge,30);
     }
     else if(!isCharging && isFired){
         gCtx.fillStyle = "black";
-        gCtx.fillRect(600,100,0,30);
+        gCtx.fillRect(635,100,0,30);
     }
     else if(isCharging){
-        gCtx.fillRect(600,100,200,30);
+        gCtx.fillRect(635,100,200,30);
     }
 };
 
+function moveArrow() {
+  
+    // 방향 설정
+    if (degree == 0) direction = -1;
+    else if (degree == -90) direction = 1;
 
+    // 화살표 위치 조정
+    rotateX = -(-degree / 10) - 1.5;
+    rotateY = -(-degree / 30) * 2 - 1;
+
+    // 화살표 그리기
+    gCtx.save();
+    gCtx.translate(248, 600);
+    gCtx.rotate(degree * Math.PI / 180);
+    gCtx.drawImage(arrow, rotateX, rotateY);
+    gCtx.restore();
+
+    degree += direction;
+}
 
 // 스페이스바 입력
 
@@ -346,12 +354,10 @@ const keyupHandler = event => {
     if(event.keyCode === 32 && !isFired){
         isCharging = false;
         isFired = true;
-        ballPower = gauge / 2;
-        let degreeR = -(degree) * Math.PI / 180;
-
+        ballPower = gauge / 2.43;
+        let degreeR = degree * Math.PI / 180;
         ballVx = ballPower * Math.cos(degreeR);
         ballVy = -ballPower * Math.sin(degreeR);
-
         gauge = 0;
     }
 };
