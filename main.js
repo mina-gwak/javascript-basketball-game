@@ -186,6 +186,10 @@ function startScreen() {
   var currentScore;
   
   function endScreen() {
+    ballX = 100;
+    ballY = 630;
+    isFired = false;
+
     var darkDiv = document.createElement("div");
     darkDiv.setAttribute("class", "dark-div end");
   
@@ -209,9 +213,7 @@ function startScreen() {
   
     var scoreNum = document.createElement("p");
     scoreNum.setAttribute("class", "score-text");
-    // var currentScore = document.querySelector(".score p").innerText;
-    // 이미지랑 랭킹 업데이트 확인하려고 1로 지정해둠
-    currentScore = "1";
+    var currentScore = document.querySelector(".score p").innerText;
     scoreNum.innerText = currentScore;
     scoreText.appendChild(scoreNum);
   
@@ -262,6 +264,11 @@ function startScreen() {
       div.parentNode.removeChild(div);
       var rank = document.querySelector(".ranking");
       rank.parentNode.removeChild(rank);
+      document.querySelector(".score p").innerText = 0;
+      isCharging = false;
+      isFired = false;
+      stopArrow = false;
+      goal = false;
       showTime();
       createRanking();
       gameTimer();
@@ -303,8 +310,8 @@ function draw(stop){
     arrowFrame();
     if (stopArrow == false) moveArrow();
     else drawArrow();
-    drawGauging();
     drawGaugeBar();
+    drawGauging();
     drawBall();
     // drawBackground();
 
@@ -312,13 +319,13 @@ function draw(stop){
         ballX = 100;
         ballY = 630;
     }
-    else if(isFired && (ballY > 640 || ballY < 60 || ballX < 60 )){          // 바닥 또는 천장에 닿으면 재시작
+    else if(isFired && (ballY > 640 || ballY < 60 || ballX < 60 ) && goal == false){          // 바닥 또는 천장에 닿으면 재시작
         isFired = false;
         stopArrow = false;
         goal = false;
     }
-    else if( ((ballX - ballRadius >= 1086 && ballX + ballRadius <= 1232) && (ballY + ballRadius >= 400 && ballY + ballRadius <= 1420 )) || goal == true ){
-        hoopAnimation(ballY);
+    else if( ((ballX - ballRadius >= 1086 && ballX + ballRadius - 30 <= 1240) && (ballY + ballRadius >= 400 && ballY + ballRadius <= 500 )) || goal == true ){
+        hoopAnimation(ballX, ballY);
     }
     else{               // 발사 후 X, Y좌표 계산
         if(ballY+ballVy < 0 || ballY + ballVy > height){                     // 천장에 닿았을 때 튕기는거  
@@ -333,49 +340,56 @@ function draw(stop){
     }
 }
 
-function hoopAnimation(y) {
-  if (y != 800) {
+function hoopAnimation(x, y) {
+  if (y < 800) {
+    if (x >= 1120) {
+      ballX -= 30;
+    }
     goal = true;
-    ballY += 10;
+    ballY += 15;
   }
   else if (y >= 800) {
     goal = false;
     isFired = false;
     stopArrow = false;
+    var crScore = parseInt(document.querySelector(".score p").innerText)+1;
+    document.querySelector(".score p").innerText = crScore;
   }
 }
 
 function drawGaugeBar(){
-    gCtx.strokeRect(600,100,200,30);
-    gCtx.lineWidth = 3;
-    gCtx.font = "20px bold"
-    gCtx.fillText("파워 게이지", 650, 180);
+    gCtx.beginPath();
+    gCtx.fillStyle = "#fff"
+    gCtx.fillRect(430, 50, 445, 65);
+    gCtx.closePath();
 }
 
 function drawGauging(){
-    if(gauge<200 && isCharging && !isFired && Rgauge == false){
+    if(gauge*2<200 && isCharging && !isFired && Rgauge == false){
         gauge += 1;
     }
-    else if(gauge == 200 && Rgauge == false){
+    else if(gauge*2 == 200 && Rgauge == false){
         Rgauge = true;
         gauge -= 1;
     }
-    else if(gauge > 0 && isCharging && !isFired && Rgauge == true ){
+    else if(gauge*2 > 0 && isCharging && !isFired && Rgauge == true ){
         gauge -= 1;
     }
-    else if(gauge == 0 && Rgauge == true){
+    else if(gauge*2 == 0 && Rgauge == true){
         Rgauge = false;
         gauge += 1;
     }
-
-    gCtx.fillRect(600,100,gauge,30);
+    gCtx.beginPath();
+    gCtx.rect(435,55,gauge*4.3,55);
+    gCtx.fillStyle = "#E67567";
+    gCtx.fill();
+    gCtx.closePath();
 };
 
 // 스페이스바 입력
 
 const keydownHandler = event => {
     if (event.keyCode === 32) {
-        gCtx.fillStyle = "#E67567";
         event.preventDefault();
         isCharging = true;
         isFired = false;
@@ -389,7 +403,7 @@ const keyupHandler = event => {
         gCtx.fillStyle = "black";
         isCharging = false;
         isFired = true;
-        ballPower = gauge / 2;
+        ballPower = 25 + gauge / 7;
         let degreeR = -(degree) * Math.PI / 180;
 
         ballVx = ballPower * Math.cos(degreeR);
