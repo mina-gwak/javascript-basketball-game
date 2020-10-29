@@ -44,6 +44,7 @@ let isHitted = false;
 const GRAVITY_ACCELERATION = 0.098;
 let degree=0;
 let stopArrow = false;
+let goal = false;
 
 // 각도기 조절
 
@@ -314,10 +315,11 @@ function draw(stop){
     else if(isFired && (ballY > 640 || ballY < 60 || ballX < 60 )){          // 바닥 또는 천장에 닿으면 재시작
         isFired = false;
         stopArrow = false;
+        goal = false;
     }
-    // else if( (ballX - ballRadius >= 1086 || ballX + ballRadius <= 1232) && (ballY + ballRadius >= 400 || ballY + ballRadius <= 1420 ) ){
-    //     ballY = 630;
-    // }
+    else if( ((ballX - ballRadius >= 1086 && ballX + ballRadius <= 1232) && (ballY + ballRadius >= 400 && ballY + ballRadius <= 1420 )) || goal == true ){
+        hoopAnimation(ballY);
+    }
     else{               // 발사 후 X, Y좌표 계산
         if(ballY+ballVy < 0 || ballY + ballVy > height){                     // 천장에 닿았을 때 튕기는거  
             ballVy = - ballVy;
@@ -329,6 +331,18 @@ function draw(stop){
         ballX += ballVx;
         ballY += ballVy;
     }
+}
+
+function hoopAnimation(y) {
+  if (y != 800) {
+    goal = true;
+    ballY += 10;
+  }
+  else if (y >= 800) {
+    goal = false;
+    isFired = false;
+    stopArrow = false;
+  }
 }
 
 function drawGaugeBar(){
