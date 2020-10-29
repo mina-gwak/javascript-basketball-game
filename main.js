@@ -315,6 +315,9 @@ function draw(stop){
         isFired = false;
         stopArrow = false;
     }
+    // else if( (ballX - ballRadius >= 1086 || ballX + ballRadius <= 1232) && (ballY + ballRadius >= 400 || ballY + ballRadius <= 1420 ) ){
+    //     ballY = 630;
+    // }
     else{               // 발사 후 X, Y좌표 계산
         if(ballY+ballVy < 0 || ballY + ballVy > height){                     // 천장에 닿았을 때 튕기는거  
             ballVy = - ballVy;
