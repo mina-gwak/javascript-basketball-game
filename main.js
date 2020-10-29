@@ -126,7 +126,7 @@ function gameTimer() {
       document.querySelector(".timer > p").innerText = time;
       clearInterval(timer);
       clearInterval(arrow);
-      clearInterval(draw);
+      clearInterval(start);
       time = 30;
       endScreen();
     }
@@ -292,11 +292,14 @@ function draw(){
     drawBall();
     // drawBackground();
 
-    if(!isFired || ballX > width || ballY > 660){
+    if(!isFired){       // 초기 상태
         ballX = 100;
         ballY = 630;
     }
-    else{
+    else if(isFired && (ballY > 640 || ballY < 60 || ballX < 60 )){          // 바닥 또는 천장에 닿으면 재시작
+        isFired = false;
+    }
+    else{               // 발사 후 X, Y좌표 계산
         if(ballY+ballVy < 0 || ballY + ballVy > height){
             ballVy = - ballVy;
         }
