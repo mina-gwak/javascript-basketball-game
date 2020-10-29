@@ -300,10 +300,10 @@ function draw(){
         isFired = false;
     }
     else{               // 발사 후 X, Y좌표 계산
-        if(ballY+ballVy < 0 || ballY + ballVy > height){
+        if(ballY+ballVy < 0 || ballY + ballVy > height){                     // 천장에 닿았을 때 튕기는거  
             ballVy = - ballVy;
         }
-        else if(ballX+ballVx < 0 || ballX + ballVx > width){
+        else if(ballX+ballVx < 0 || ballX + ballVx > width || (ballX+ballVx && ballY+ballVy == 410)){                 // 벽에 닿았을 때 튕기는거
             ballVx = - ballVx;
         }
         ballVy += 0.98;
