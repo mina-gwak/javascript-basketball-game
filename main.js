@@ -46,12 +46,20 @@ let degree=0;
 let stopArrow = false;
 let goal = false;
 
+// 화살표 회전
+var direction = -1;
+var rotateX = -1;
+var rotateY = -1;
+
+var time = 30;
+
 // 각도기 조절
 
 var arrow = new Image();
 arrow.src = "./images/arrow.png";
 
 // 90도 틀 그리기
+
 function arrowFrame() {
   gCtx.beginPath();
   gCtx.moveTo(248, 610);
@@ -70,9 +78,7 @@ function arrowFrame() {
   gCtx.closePath();
 }
 
-var direction = -1;
-var rotateX = -1;
-var rotateY = -1;
+// 화살표 그리기
 
 function drawArrow() {
   gCtx.save();
@@ -102,8 +108,6 @@ function moveArrow() {
     degree += direction;
 }
 
-// 타이머
-
 // 타이머 영역 만들기
 
 var timeArea = document.createElement("div");
@@ -119,13 +123,11 @@ timerText.setAttribute("class", "bold");
 timerText.innerText = "SECOND";
 document.querySelector(".timer").appendChild(timerText);
 
-// 타이머
-
-var time = 30;
-
 function showTime() {
   document.querySelector(".timer > p").innerText = time;
 }
+
+// 타이머
 
 function gameTimer() {
 //   var arrow = setInterval(moveArrow, 10);
@@ -148,10 +150,7 @@ function gameTimer() {
   }
 }
 
-// gameTimer();
-
 // 스코어 영역 만들기
-// 점수 카운트하는 부분이 구현되지 않아 임의로 값 넣어둠
 
 var scoreArea = document.createElement("div");
 scoreArea.setAttribute("class", "score area");
@@ -182,8 +181,6 @@ function startScreen() {
   }
   
   // 엔딩 화면
-  
-  var currentScore;
   
   function endScreen() {
     ballX = 100;
@@ -279,7 +276,7 @@ function startScreen() {
   
   // 랭킹 테이블
   
-  var scoreArr; // onload에서 초기화했음
+  var scoreArr;
   
   function createRanking() {
     var ranking = document.createElement("table");
@@ -302,8 +299,9 @@ function startScreen() {
 
 function drawBall(){
     gCtx.drawImage(ball, ballX, ballY, 120, 120);
-
 }
+
+// 게임 화면 그리기
 
 function draw(stop){
     gCtx.clearRect(0,0,width,height);
@@ -324,7 +322,7 @@ function draw(stop){
         stopArrow = false;
         goal = false;
     }
-    else if( ((ballX - ballRadius >= 1086 && ballX + ballRadius - 30 <= 1240) && (ballY + ballRadius >= 400 && ballY + ballRadius <= 500 )) || goal == true ){
+    else if((ballX + ballRadius >= 1100 && ballX + ballRadius <= 1240 && ballY + ballRadius >= 400 && ballY + ballRadius <= 430) || goal == true ){
         hoopAnimation(ballX, ballY);
     }
     else{               // 발사 후 X, Y좌표 계산
@@ -340,13 +338,22 @@ function draw(stop){
     }
 }
 
+// 골 넣으면 바닥으로 떨어지는 애니메이션
+
 function hoopAnimation(x, y) {
   if (y < 800) {
-    if (x >= 1120) {
-      ballX -= 30;
+    if (x >= 1110 && x <= 1130) {
+      ballY += 20;
+    }
+    else if (x >= 1110) {
+      ballX -= 20;
+      ballY += 20;
+    }
+    else if (x <= 1110) {
+      ballX += 20;
+      ballY += 20;
     }
     goal = true;
-    ballY += 15;
   }
   else if (y >= 800) {
     goal = false;
@@ -357,36 +364,38 @@ function hoopAnimation(x, y) {
   }
 }
 
+// 게이지 바 그리기
+
 function drawGaugeBar(){
     gCtx.beginPath();
     gCtx.fillStyle = "#fff"
-    gCtx.fillRect(430, 50, 445, 65);
+    gCtx.fillRect(432.5, 65, 405, 60);
     gCtx.closePath();
 }
 
 function drawGauging(){
-    if(gauge*2<200 && isCharging && !isFired && Rgauge == false){
+    if(gauge < 100 && isCharging && !isFired && Rgauge == false){
         gauge += 1;
     }
-    else if(gauge*2 == 200 && Rgauge == false){
+    else if(gauge == 100 && Rgauge == false){
         Rgauge = true;
         gauge -= 1;
     }
-    else if(gauge*2 > 0 && isCharging && !isFired && Rgauge == true ){
+    else if(gauge > 0 && isCharging && !isFired && Rgauge == true ){
         gauge -= 1;
     }
-    else if(gauge*2 == 0 && Rgauge == true){
+    else if(gauge == 0 && Rgauge == true){
         Rgauge = false;
         gauge += 1;
     }
     gCtx.beginPath();
-    gCtx.rect(435,55,gauge*4.3,55);
+    gCtx.rect(437.5, 70, gauge*4, 50);
     gCtx.fillStyle = "#E67567";
     gCtx.fill();
     gCtx.closePath();
 };
 
-// 스페이스바 입력
+// 스페이스바 입력 (공 던지기)
 
 const keydownHandler = event => {
     if (event.keyCode === 32) {
@@ -403,7 +412,7 @@ const keyupHandler = event => {
         gCtx.fillStyle = "black";
         isCharging = false;
         isFired = true;
-        ballPower = 25 + gauge / 7;
+        ballPower = 25 + gauge / 6;
         let degreeR = -(degree) * Math.PI / 180;
 
         ballVx = ballPower * Math.cos(degreeR);
@@ -414,6 +423,5 @@ const keyupHandler = event => {
     }
 };
 
-// const start = setInterval(draw, 10);
 document.addEventListener("keydown", keydownHandler, false);
 document.addEventListener("keyup", keyupHandler, false);
